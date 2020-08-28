@@ -17,11 +17,18 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+$router->group(['prefix' => 'api'], function () use ($router) {
     // TODO: Sign routes
 
-    // Teams
-    $router->get('teams', ['uses' =>'TeamController@index']);
-    $router->post('teams', ['uses' =>'TeamController@store']);
-    $router->post('teams/add', ['uses' =>'TeamController@addMember']);
+    // auth
+    $router->post('register', ['uses' => 'AuthController@register']);
+    $router->post('login', ['uses' => 'AuthController@auth']);
+
+    // secure api
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        // Teams
+        $router->get('teams', ['uses' => 'TeamController@index']);
+        $router->post('teams', ['uses' => 'TeamController@store']);
+        $router->post('teams/add', ['uses' => 'TeamController@addMember']);
+    });
 });
