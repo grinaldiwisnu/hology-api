@@ -17,6 +17,9 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api'], function () use ($router) {
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
     // TODO: Sign routes
+
+    // Teams
+    $router->get('teams', ['uses' =>'TeamController@index']);
 });
