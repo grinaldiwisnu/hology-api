@@ -23,6 +23,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // auth
     $router->post('register', ['uses' => 'AuthController@register']);
     $router->post('login', ['uses' => 'AuthController@auth']);
+    $router->post('refresh', ['uses' => 'AuthController@refresh']);
+
+    // institutions
+    $router->get('institutions', ['uses' => 'InstitutionController@institutions']);
 
     // secure api
     $router->group(['middleware' => 'auth'], function () use ($router) {
@@ -31,7 +35,5 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('teams', ['uses' => 'TeamController@store']);
         $router->post('teams/add', ['uses' => 'TeamController@addMember']);
         
-        // Institutions
-        $router->get('institutions', ['uses' => 'InstitutionController@institutions']);
     });
 });

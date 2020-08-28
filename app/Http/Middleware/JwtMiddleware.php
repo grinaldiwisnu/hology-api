@@ -6,6 +6,7 @@ use App\Models\User;
 use Closure;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 
 class JwtMiddleware
 {
@@ -22,8 +23,8 @@ class JwtMiddleware
         if (!$token) {
             return response()->json([
                 'status' => false,
+                'data' => null,
                 'message' => 'Bearer not provided',
-                'data' => null
             ], 401);
         }
         $token = explode(' ', $token);
@@ -31,23 +32,29 @@ class JwtMiddleware
         if (($token[0] !== 'Bearer') || !$token[1]) {
             return response()->json([
                 'status' => false,
+                'data' => null,
                 'message' => 'Bearer not provided',
-                'data' => null
             ], 401);
         }
 
         try {
             $credentials = JWT::decode($token[1], env('APP_JWT'), ['HS256']);
+        } catch (SignatureInvalidException $inv) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid format bearer'
+            ], 400);
         } catch (ExpiredException $e) {
             return response()->json([
                 'status' => false,
+                'data' => null,
                 'message' => 'Bearer expired'
             ], 400);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
+                'data' => null,
                 'message' => 'An error with bearer',
-                'data' => null
             ], 400);
         }
 
@@ -56,8 +63,8 @@ class JwtMiddleware
         if (!$users) {
             return response()->json([
                 'status' => false,
+                'data' => null,
                 'message' => 'User with bearer not match',
-                'data' => null
             ], 400);
         }
 

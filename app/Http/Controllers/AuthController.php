@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -134,6 +136,59 @@ class AuthController extends Controller
                     'message' => $th
                 ], 400);
             }
+        }
+    }
+
+    public function refresh(Request $request)
+    {
+        $validation = Validator::make($request->all(),
+        [
+            'token' => 'required'
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'Bearer not provided',
+            ], 401);
+        }
+
+        try {
+            $credentials = JWT::decode($request->token, env('APP_JWT'), ['HS256']);
+        } catch (SignatureInvalidException $inv) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid format bearer'
+            ], 400);
+        } catch (ExpiredException $e) {
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'Bearer expired, please relogin',
+            ], 400);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'An error with bearer',
+            ], 400);
+        }
+
+        $users = User::where('user_id', $credentials->sub->user_id)->where('user_email', $credentials->sub->user_email)->first();
+
+        if (!$users) {
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'User with bearer not match',
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => true,
+                'data' => $this->jwt($users),
+                'message' => 'new access token generated',
+            ], 200);
         }
     }
 }
