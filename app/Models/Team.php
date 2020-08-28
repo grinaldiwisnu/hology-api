@@ -24,6 +24,11 @@ class Team extends Model
         return $this->belongsTo('App\User', 'team_lead', 'user_id');
     }
 
+    public function competition()
+    {
+        return $this->belongsTo('App\Competition', 'competition_id', 'competition_id');
+    }
+
     public function users()
     {
         return $this->belongsTomany('App\User', 'detail_teams', 'team_id', 'user_id');
