@@ -159,7 +159,8 @@ class AuthController extends Controller
         } catch (SignatureInvalidException $inv) {
             return response()->json([
                 'status' => false,
-                'message' => 'Invalid format bearer'
+                'data' => $inv,
+                'message' => 'Invalid format bearer',
             ], 400);
         } catch (ExpiredException $e) {
             return response()->json([
