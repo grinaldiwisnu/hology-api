@@ -30,5 +30,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('teams', ['uses' => 'TeamController@index']);
         $router->post('teams', ['uses' => 'TeamController@store']);
         $router->post('teams/add', ['uses' => 'TeamController@addMember']);
+        
+        // Institutions
+        $router->get('institutions', ['uses' => 'InstitutionController@institutions']);
     });
 });
