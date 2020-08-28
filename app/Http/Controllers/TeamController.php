@@ -31,7 +31,7 @@ class TeamController extends Controller
     private function encodeToken($team_id)
     {
         $payload = [
-            'iss'   => 'triplen-jwt-refresh',
+            'iss'   => 'triplen-jwt-token',
             'sub'   => [
                 'team_id' => $team_id,
             ],
