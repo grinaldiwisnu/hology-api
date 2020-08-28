@@ -25,7 +25,6 @@ class TeamController extends Controller
      * Create new Join Token
      *
      * @param string team_id
-     * @param string user_id
      * @return string
      */
     private function encodeToken($team_id)
@@ -39,7 +38,7 @@ class TeamController extends Controller
             'exp'   => time() + (24 * 60 * 60 * 7)
         ];
 
-        return JWT::encode($payload, env('APP_JWT'));
+        return JWT::encode($payload, env('APP_JWT'), 'HS256');
     }
 
     /**
@@ -50,7 +49,7 @@ class TeamController extends Controller
      */
     private function decodeToken($token)
     {
-        return JWT::decode($token, env('APP_JWT'));
+        return JWT::decode($token, env('APP_JWT'), ['HS256']);
     }
 
     /**
@@ -73,19 +72,19 @@ class TeamController extends Controller
     /**
      * Store new team
      *
-     * @param App\Models\Team $team
+     * @param App\Models\Request $request
      * @return Illuminate\Http\Response
      */
-    public function store(Team $team)
+    public function store(Request $request)
     {
         // TODO: Store new team
 
         // validate data
-        $validation = Validator::make($team, [
+        $validation = Validator::make($request->all(), [
             'institution_id' => 'required',
             'competition_id' => 'required',
-            'team_name' => 'required|unique',
-            'team_lead' => 'required|unique'
+            'name' => 'required|unique:teams,team_name',
+            'lead' => 'required|unique:teams,team_lead'
         ]);
 
         // check validation fails
@@ -98,12 +97,17 @@ class TeamController extends Controller
         }
 
         // create new team
-        $team = Team::create($team);
+        $team = new Team();
         // create relation
-        $relation = DetailTeam::create();
+        $relation = new DetailTeam();
 
-        // set default value
-        $team->payment_proof = "";
+        // set value
+        $team->institution_id = $request->institution_id;
+        $team->competition_id = $request->competition_id;
+        $team->team_name = $request->name;
+        $team->team_lead = $request->lead;
+        $team->team_payment_proof = "";
+        $team->team_assignment_letter = "";
         $team->team_status = 0;
 
         // store data to database
@@ -120,6 +124,7 @@ class TeamController extends Controller
         // set relation value
         $relation->user_id = $team->team_lead;
         $relation->team_id = $team->id;
+        $relation->detail_team_identity_pic = "";
 
         // store data to database
         try {
@@ -139,7 +144,7 @@ class TeamController extends Controller
             'success' => true,
             'data' => [
                 'team' => $team,
-                'join_link' => env('CLIENT_URL') . "?join_team=$joinToken",
+                'join_link' => env('CLIENT_URL') . "?token=$joinToken",
             ],
             'message' => 'Team created'
         ], 201);
@@ -156,8 +161,7 @@ class TeamController extends Controller
         // TODO: Store user to a team
 
         // get request params
-        $join_token = $request->post('join_token');
-        $user_id = $request->auth->user->id;
+        $join_token = $request->get('token');
 
         // decode token
         try {
@@ -183,11 +187,12 @@ class TeamController extends Controller
         }
 
         // define new relation
-        $relation = DetailTeam::create();
+        $relation = new DetailTeam();
 
         // initialize relation vars
-        $relation->user_id = $user_id;
+        $relation->user_id = $request->auth->user_id;
         $relation->team_id = $payload->sub->team_id;
+        $relation->detail_team_identity_pic = "";
 
         try {
             $relation->save();

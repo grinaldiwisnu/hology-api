@@ -19,11 +19,6 @@ class User extends Model
 
     public $timestamps = false;
 
-    public function team()
-    {
-        return $this->hasOne('App\Team', 'team_lead', 'user_id');
-    }
-
     public function teams()
     {
         return $this->belongsToMany('App\Team', 'detail_teams', 'user_id', 'team_id');

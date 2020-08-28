@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DetailTeam extends Model
 {
 
-    protected $table = 'competitions';
+    protected $table = 'detail_teams';
     /**
      * The attributes that are mass assignable.
      *

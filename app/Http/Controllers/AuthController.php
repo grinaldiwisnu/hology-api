@@ -47,7 +47,7 @@ class AuthController extends Controller
     public function auth(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'username' => 'required',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
                 'message' => $validation->errors()
             ], 400);
         } else {
-            $user = User::where(['user_name' => $request->username, 'user_password' => $request->password])->first();
+            $user = User::where('user_email', $request->email)->first();
 
             if (!$user) {
                 return response()->json([
@@ -67,15 +67,21 @@ class AuthController extends Controller
                     'message' => 'User not found'
                 ], 401);
             } else {
-                return response()->json([
-                    'success' => true,
-                    'data' => [
-                        'user' => $user,
-                        'access_token' => $this->jwt($user),
-                        'refresh_token' => $this->jwtRefresh($user)
-                    ],
-                    'message' => 'User logged in'
-                ], 200);
+                if (Hash::check($request->password, $user->user_password))
+                    return response()->json([
+                        'success' => true,
+                        'data' => [
+                            'user' => $user,
+                            'access_token' => $this->jwt($user),
+                            'refresh_token' => $this->jwtRefresh($user)
+                        ],
+                        'message' => 'User logged in'
+                    ], 200);
+                else return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Wrong password!'
+                ], 401);
             }
         }
     }
@@ -84,11 +90,11 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => 'required',
-            'password' => 'required',
-            'gender' => 'required',
-            'birthdate' => 'required',
-            'institution' => 'required'
+            'email' => 'required|email|unique:users,user_email',
+            'password' => 'required|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/',
+            'gender' => 'required|boolean',
+            'birthdate' => 'required|date|before:today',
+            'institution' => 'required|exists:institutions,institution_id'
         ]);
 
         if ($validation->fails()) {
@@ -103,7 +109,10 @@ class AuthController extends Controller
             $user->user_email = $request->email;
             $user->user_name = substr(str_replace(" ", "", strtolower($request->user_fullname)), 0, 8);
             $user->user_password = Hash::make($request->password);
-            $user->img_url = $request->image;
+            // $user->img_url = $request->image;
+            $user->user_birthdate = $request->birthdate;
+            $user->user_gender = $request->gender;
+            $user->institution_id = $request->institution;
             try {
                 if ($user->save()) {
                     return response()->json([
