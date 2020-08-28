@@ -22,4 +22,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
 
     // Teams
     $router->get('teams', ['uses' =>'TeamController@index']);
+    $router->post('teams', ['uses' =>'TeamController@store']);
+    $router->post('teams/add', ['uses' =>'TeamController@addMember']);
 });
