@@ -61,6 +61,10 @@ class JwtMiddleware
             ], 400);
         }
 
+        $request->auth = [
+            'user' => $users
+        ];
+
         return $next($request);
     }
 }
