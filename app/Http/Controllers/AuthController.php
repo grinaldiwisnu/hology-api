@@ -107,7 +107,7 @@ class AuthController extends Controller
             $user = new User();
             $user->user_fullname = $request->fullname;
             $user->user_email = $request->email;
-            $user->user_name = substr(str_replace(" ", "", strtolower($request->user_fullname)), 0, 8);
+            $user->user_name = substr(str_replace(" ", "", strtolower($request->fullname)), 0, 8);
             $user->user_password = Hash::make($request->password);
             // $user->img_url = $request->image;
             $user->user_birthdate = $request->birthdate;

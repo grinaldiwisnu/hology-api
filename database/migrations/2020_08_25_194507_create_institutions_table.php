@@ -16,7 +16,6 @@ class CreateInstitutionsTable extends Migration
         Schema::create('institutions', function (Blueprint $table) {
             $table->smallIncrements('institution_id');
             $table->string('insitution_name', 45);
-            $table->timestampsTz();
         });
     }
 
