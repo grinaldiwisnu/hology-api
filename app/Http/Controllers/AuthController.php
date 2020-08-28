@@ -156,12 +156,6 @@ class AuthController extends Controller
 
         try {
             $credentials = JWT::decode($request->token, env('APP_JWT'), ['HS256']);
-        } catch (SignatureInvalidException $inv) {
-            return response()->json([
-                'status' => false,
-                'data' => $inv,
-                'message' => 'Invalid format bearer',
-            ], 400);
         } catch (ExpiredException $e) {
             return response()->json([
                 'status' => false,

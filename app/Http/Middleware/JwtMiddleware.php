@@ -39,11 +39,6 @@ class JwtMiddleware
 
         try {
             $credentials = JWT::decode($token[1], env('APP_JWT'), ['HS256']);
-        } catch (SignatureInvalidException $inv) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid format bearer'
-            ], 400);
         } catch (ExpiredException $e) {
             return response()->json([
                 'status' => false,
