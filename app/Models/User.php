@@ -17,6 +17,8 @@ class User extends Model
         'user_fullname', 'user_email', 'user_name', 'user_password', 'user_gender', 'user_birthdate', 'institution_id', 'team_id',
     ];
 
+    protected $hidden = ['user_password'];
+
     public $timestamps = false;
 
     public function teams()
