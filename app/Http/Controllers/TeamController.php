@@ -63,9 +63,17 @@ class TeamController extends Controller
         // TODO: Get all teams
         $teams = Team::orderBy('team_name')->get();
 
+        $returnTeams = [];
+
+        foreach ($teams as $team) {
+            $team->members = DetailTeam::where('team_id', $team->team_id)->get();
+
+            array_push($returnTeams, $team);
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $teams,
+            'data' => $returnTeams,
             'message' => 'Successfully get all teams'
         ]);
     }
@@ -108,7 +116,6 @@ class TeamController extends Controller
         $team->team_name = $request->name;
         $team->team_lead = $request->lead;
         $team->team_payment_proof = "";
-        $team->team_assignment_letter = "";
         $team->team_status = 0;
 
         // store data to database
@@ -126,6 +133,7 @@ class TeamController extends Controller
         $relation->user_id = $team->team_lead;
         $relation->team_id = $team->id;
         $relation->detail_team_identity_pic = "";
+        $relation->detail_team_proof = "";
 
         // store data to database
         try {
@@ -161,8 +169,8 @@ class TeamController extends Controller
     {
         // TODO: Store user to a team
 
-        // get request params
-        $join_token = $request->get('token');
+        // post request params
+        $join_token = $request->post('token');
 
         // decode token
         try {
@@ -194,6 +202,7 @@ class TeamController extends Controller
         $relation->user_id = $request->auth->user_id;
         $relation->team_id = $payload->sub->team_id;
         $relation->detail_team_identity_pic = "";
+        $relation->detail_team_proof = "";
 
         try {
             $relation->save();
@@ -223,14 +232,20 @@ class TeamController extends Controller
         // TODO: get team payment proof
 
         // get team;
-        $team = Team::where('team_id', $id)->get();
+        $team = Team::where('team_id', $id)->first();
+
+        if (!$team)
+            return response()->json([
+                'success' => 'false',
+                'data' => null,
+                'message' => 'Team not found!'
+            ], 404);
 
         // split ext and filename
-        [$ext, $filename] = explode("-", $team->payment_proof);
-
+        [$ext, $filename] = explode("-", $team->team_payment_proof, 2);
 
         // define path
-        $filepath = storage_path("/app/teams/$id/$filename.$ext");
+        $filepath = storage_path("app/teams/payments/$filename.$ext");
 
         // read file content
         try {
@@ -260,7 +275,7 @@ class TeamController extends Controller
 
         // Validate file
         $validation = Validator::make($request->file(), [
-            'payment_proof' => 'mimes:png,jpg|max:2048'
+            'payment_proof' => 'required|mimes:png,jpg|max:2048'
         ]);
 
         // If validation fails
@@ -278,16 +293,24 @@ class TeamController extends Controller
         // Create new filename
         $fileName = Str::uuid();
         $ext = $file->getClientOriginalExtension();
-        $filePath = storage_path("/app/teams/$id/$fileName.$ext");
+        $filePath = storage_path("app/teams/payments/$fileName.$ext");
 
         // Store file in storage
         move_uploaded_file($file->getPathname(), $filePath);
 
         // Update field in database;
-        Team::where('team_id', $id)
-            ->update([
-                'team_payment_proof' => "$ext-$fileName"
-            ]);
+        try {
+            Team::where('team_id', $id)
+                ->update([
+                    'team_payment_proof' => "$ext-$fileName"
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $e
+            ], 500);
+        }
 
         return response()->json([
             'success' => true,
@@ -323,7 +346,7 @@ class TeamController extends Controller
 
         // fill path with data from table
         foreach ($detailTeams as $value) {
-            $paths[$value->user_id] = url("api/teams/$id/identity-pics/") . $value->detail_team_identity_pic;
+            $paths[$value->user_id] = url("api/teams/$id/identity-pics/") . "/$value->detail_team_identity_pic";
         }
 
         // return path to user
@@ -348,7 +371,7 @@ class TeamController extends Controller
         // get relation;
         $detailTeam = DetailTeam::where('team_id', $id)
             ->where('detail_team_identity_pic', $filename)
-            ->get();
+            ->first();
 
         if (!$detailTeam)
             return response()->json([
@@ -358,11 +381,11 @@ class TeamController extends Controller
             ], 404);
 
         // split ext and filename
-        [$ext, $filename] = explode("-", $detailTeam->detail_team_identity_pic);
+        [$ext, $filename] = explode("-", $detailTeam->detail_team_identity_pic, 2);
 
 
         // define path
-        $filepath = storage_path("/app/teams/$id/$filename.$ext");
+        $filepath = storage_path("app/teams/identity-pics/$filename.$ext");
 
         // read file content
         try {
@@ -391,7 +414,7 @@ class TeamController extends Controller
 
         // Validate file
         $validation = Validator::make($request->file(), [
-            'identity' => 'mimes:png,jpg|max:2048'
+            'identity' => 'required|mimes:png,jpg|max:2048'
         ]);
 
         // If validation fails
@@ -409,22 +432,30 @@ class TeamController extends Controller
         // Create new filename
         $fileName = Str::uuid();
         $ext = $file->getClientOriginalExtension();
-        $filePath = storage_path("/app/teams/$id/$fileName.$ext");
+        $filePath = storage_path("app/teams/identity-pics/$fileName.$ext");
 
         // Store file in storage
         move_uploaded_file($file->getPathname(), $filePath);
 
         // Update field in database;
-        DetailTeam::where('team_id', $id)
-            ->where('user_id', $request->auth->id)
-            ->update([
-                'detail_team_identity_pic' => "$ext-$fileName"
-            ]);
+        try {
+            DetailTeam::where('team_id', $id)
+                ->where('user_id', $request->auth->user_id)
+                ->update([
+                    'detail_team_identity_pic' => "$ext-$fileName"
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $e
+            ], 500);
+        }
 
         return response()->json([
             'success' => true,
             'data' => [
-                'detail_team_identity_pic' => "$ext-$fileName"
+                'detail_team_identity_pic' => "$ext-$fileName",
             ],
             'message' => 'Upload success'
         ]);
@@ -479,8 +510,8 @@ class TeamController extends Controller
 
         // get relation;
         $detailTeam = DetailTeam::where('team_id', $id)
-            ->where('detail_team_identity_pic', $filename)
-            ->get();
+            ->where('detail_team_proof', $filename)
+            ->first();
 
         if (!$detailTeam)
             return response()->json([
@@ -490,11 +521,11 @@ class TeamController extends Controller
             ], 404);
 
         // split ext and filename
-        [$ext, $filename] = explode("-", $detailTeam->detail_team_proof);
+        [$ext, $filename] = explode("-", $detailTeam->detail_team_proof, 2);
 
 
         // define path
-        $filepath = storage_path("/app/teams/$id/$filename.$ext");
+        $filepath = storage_path("app/teams/proofs/$filename.$ext");
 
         // read file content
         try {
@@ -507,7 +538,7 @@ class TeamController extends Controller
             ], 500);
         }
 
-        return response($file, 200, ['Content-Type' => "image/$ext"]);
+        return response($file, 200, ['Content-Type' => "application/pdf"]);
     }
 
     /**
@@ -523,7 +554,7 @@ class TeamController extends Controller
 
         // Validate file
         $validation = Validator::make($request->file(), [
-            'proof' => 'mimes:pdf,png,jpg|max:2048'
+            'proof' => 'required|mimes:pdf|max:2048'
         ]);
 
         // If validation fails
@@ -536,22 +567,30 @@ class TeamController extends Controller
         }
 
         // Get file from request
-        $file = $request->file('identity');
+        $file = $request->file('proof');
 
         // Create new filename
         $fileName = Str::uuid();
         $ext = $file->getClientOriginalExtension();
-        $filePath = storage_path("/app/teams/$id/$fileName.$ext");
+        $filePath = storage_path("app/teams/proofs/$fileName.$ext");
 
         // Store file in storage
         move_uploaded_file($file->getPathname(), $filePath);
 
         // Update field in database;
-        DetailTeam::where('team_id', $id)
-            ->where('user_id', $request->auth->id)
-            ->update([
-                'detail_team_proof' => "$ext-$fileName"
-            ]);
+        try {
+            DetailTeam::where('team_id', $id)
+                ->where('user_id', $request->auth->user_id)
+                ->update([
+                    'detail_team_proof' => "$ext-$fileName"
+                ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $e
+            ], 500);
+        }
 
         return response()->json([
             'success' => true,
