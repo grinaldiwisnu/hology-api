@@ -77,7 +77,8 @@ $app->configure('app');
 // ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\JwtMiddleware::class
+    'auth' => App\Http\Middleware\JwtMiddleware::class,
+    'team' => App\Http\Middleware\TeamMiddleware::class,
 ]);
 
 $app->middleware([
