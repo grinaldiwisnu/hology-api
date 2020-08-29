@@ -287,6 +287,21 @@ class TeamController extends Controller
             ], 403);
         }
 
+        // get team;
+        $detailTeam = Team::where('team_id', $id)->first();
+
+        if ($detailTeam->team_payment_proof) {
+            // split ext and filename
+            [$ext, $filename] = explode("-", $detailTeam->team_payment_proof, 2);
+
+            // define path
+            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+
+            // delete file if exists
+            if (file_exists($filepath))
+                unlink($filepath);
+        }
+
         // Get file from request
         $file = $request->file('payment_proof');
 
@@ -424,6 +439,23 @@ class TeamController extends Controller
                 'data' => null,
                 'message' => $validation->errors()
             ], 403);
+        }
+
+        // get relation;
+        $detailTeam = DetailTeam::where('team_id', $id)
+            ->where('user_id', $request->auth->user_id)
+            ->first();
+
+        if ($detailTeam->detail_team_identity_pic) {
+            // split ext and filename
+            [$ext, $filename] = explode("-", $detailTeam->detail_team_identity_pic, 2);
+
+            // define path
+            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+
+            // delete file if exists
+            if (file_exists($filepath))
+                unlink($filepath);
         }
 
         // Get file from request
@@ -564,6 +596,23 @@ class TeamController extends Controller
                 'data' => null,
                 'message' => $validation->errors()
             ], 403);
+        }
+
+        // get relation;
+        $detailTeam = DetailTeam::where('team_id', $id)
+            ->where('user_id', $request->auth->user_id)
+            ->first();
+
+        if ($detailTeam->detail_team_proof) {
+            // split ext and filename
+            [$ext, $filename] = explode("-", $detailTeam->detail_team_proof, 2);
+
+            // define path
+            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+
+            // delete file if exists
+            if (file_exists($filepath))
+                unlink($filepath);
         }
 
         // Get file from request
