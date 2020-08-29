@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Competition;
+
 class CompetitionController extends Controller
 {
     /**
@@ -12,5 +14,29 @@ class CompetitionController extends Controller
     public function __construct()
     {
         //TODO: create CRUD for competition and create CRUD for competition by user ID
+    }
+
+    /**
+     * Get all competitions
+     *
+     * @return \Illuminate\Http\Response $response
+     */
+    public function index()
+    {
+        $result = Competition::get();
+
+        if (count($result) == 0) {
+            return response()->json([
+                'success' => false,
+                'data' => [],
+                'message' => 'Data is empty, add institution first'
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+                'message' => 'Success fetch institution data'
+            ], 200);
+        }
     }
 }
