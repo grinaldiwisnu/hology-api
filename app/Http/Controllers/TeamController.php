@@ -125,7 +125,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -142,7 +142,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -157,6 +157,57 @@ class TeamController extends Controller
             ],
             'message' => 'Team created'
         ], 201);
+    }
+
+    /**
+     * Show a specific team
+     *
+     * @param smallint $id
+     * @return Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        // TODO: Show a team and its details
+
+        try {
+            // get team data
+            $team = Team::where('team_id', $id)
+                ->first();
+
+            // get detail teams data
+            $detailTeam = DetailTeam::where('team_id')
+                ->get();
+
+            // define member obj in team
+            $team->members = [];
+
+            // get each member data
+            foreach($detailTeam as $memberRelation) {
+                $member = User::where('user_id', $memberRelation->user_id)
+                    ->first();
+
+                // unset password
+                unset($member->password);
+
+                // set detail to member
+                $member->user_identity_pic = $memberRelation->detail_team_identity_pic;
+                $member->user_proof = $memberRelation->detail_team_proof;
+
+                array_push($team->member, $member);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $team,
+            'message' => 'Success fetch team'
+        ]);
     }
 
     /**
@@ -210,7 +261,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -254,7 +305,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -323,7 +374,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -409,7 +460,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -480,7 +531,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -566,7 +617,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
@@ -637,7 +688,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 

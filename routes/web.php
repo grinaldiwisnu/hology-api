@@ -52,6 +52,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         // Teams
         $router->get('teams', ['uses' => 'TeamController@index']);
         $router->post('teams', ['uses' => 'TeamController@store']);
+        $router->get('teams/{id}', ['uses' => 'TeamController@show']);
         $router->post('teams/add', ['uses' => 'TeamController@addMember']);
 
         // For team member only
