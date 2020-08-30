@@ -118,6 +118,7 @@ class TeamController extends Controller
         $team->team_lead = $request->lead;
         $team->team_payment_proof = "";
         $team->team_status = 0;
+        $team->team_join_url = 
 
         // store data to database
         try {
@@ -147,14 +148,25 @@ class TeamController extends Controller
             ], 500);
         }
 
-        $joinToken = $this->encodeToken($relation->team_id);
+        $joinToken = $this->encodeToken($team->team_id);
+
+        $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
+
+        try {
+            $team->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+            ], 500);
+        }
 
         // return success response
         return response()->json([
             'success' => true,
             'data' => [
                 'team' => $team,
-                'join_link' => env('CLIENT_URL') . "?token=$joinToken",
             ],
             'message' => 'Team created'
         ], 201);

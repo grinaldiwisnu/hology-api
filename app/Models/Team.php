@@ -14,7 +14,7 @@ class Team extends Model
      * @var array
      */
     protected $fillable = [
-        'institution_id', 'competition_id', 'team_name', 'team_payment_proof', 'team_lead', 'team_status',
+        'institution_id', 'competition_id', 'team_name', 'team_payment_proof', 'team_lead', 'team_status', 'team_join_url'
     ];
 
     public $timestamps = false;
