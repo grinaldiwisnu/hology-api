@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Institution;
+use App\Models\Competition;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,7 +13,43 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call('CompetitionSeeder');
         $this->call('InstitutionSeeder');
+    }
+}
+
+class CompetitionSeeder extends Seeder {
+    public function run()
+    {
+        Competition::create([
+            'competition_name' => 'Business IT',
+            'competition_description' => ''
+        ]);
+
+        Competition::create([
+            'competition_name' => 'Game',
+            'competition_description' => ''
+        ]);
+
+        Competition::create([
+            'competition_name' => 'App Innovation',
+            'competition_description' => ''
+        ]);
+
+        Competition::create([
+            'competition_name' => 'Programming',
+            'competition_description' => ''
+        ]);
+
+        Competition::create([
+            'competition_name' => 'Smart Device',
+            'competition_description' => ''
+        ]);
+
+        Competition::create([
+            'competition_name' => 'CTF',
+            'competition_description' => ''
+        ]);
     }
 }
 
