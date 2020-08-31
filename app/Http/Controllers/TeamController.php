@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Competition;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\DetailTeam;
+use App\Models\Institution;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
@@ -70,6 +72,17 @@ class TeamController extends Controller
             // get detail teams data
             $detailTeam = DetailTeam::where('team_id', $team->team_id)
                 ->get();
+
+            // comptetition
+            $team->competition = Competition::where('competition_id', $team->competition_id)
+                ->first();
+
+            // institution
+            $team->institution = Institution::where('institution_id', $team->institution_id)
+                ->first();
+
+            unset($team->competition_id);
+            unset($team->institution_id);
 
             // define member obj in team
             $members = [];

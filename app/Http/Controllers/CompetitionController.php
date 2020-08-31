@@ -39,4 +39,24 @@ class CompetitionController extends Controller
             ], 200);
         }
     }
+
+    public function show($id)
+    {
+        $result = Competition::where('competition_id', $id)
+            ->first();
+
+        if (count($result) == 0) {
+            return response()->json([
+                'success' => false,
+                'data' => [],
+                'message' => 'Data not found'
+            ], 404);
+        } else {
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+                'message' => 'Success fetch institution data'
+            ], 200);
+        }
+    }
 }
