@@ -153,12 +153,13 @@ class TeamController extends Controller
         $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
 
         try {
-            $team->save();
+            Team::where('team_id', $team->team_id)
+                ->update(['team_join_url' => $team->team_join_url]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => $e
             ], 500);
         }
 
