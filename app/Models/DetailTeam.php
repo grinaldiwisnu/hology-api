@@ -8,6 +8,8 @@ class DetailTeam extends Model
 {
 
     protected $table = 'detail_teams';
+
+    protected $primaryKey = 'detail_team_id';
     /**
      * The attributes that are mass assignable.
      *

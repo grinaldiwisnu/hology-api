@@ -125,10 +125,10 @@ class TeamController extends Controller
             $team->save();
 
             // geenrate join token
-            $joinToken = $this->encodeToken($team->id);
+            $joinToken = $this->encodeToken($team->team_id);
             $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
 
-            Team::where('team_id', $team->id)
+            Team::where('team_id', $team->team_id)
                 ->update([
                     'team_join_url' => $team->team_join_url
                 ]);
@@ -136,13 +136,13 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 
         // set relation value
         $relation->user_id = $team->team_lead;
-        $relation->team_id = $team->id;
+        $relation->team_id = $team->team_id;
         $relation->detail_team_identity_pic = "";
         $relation->detail_team_proof = "";
 
@@ -269,7 +269,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
 

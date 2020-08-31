@@ -8,6 +8,8 @@ class Team extends Model
 {
 
     protected $table = 'teams';
+
+    protected $primaryKey = 'team_id';
     /**
      * The attributes that are mass assignable.
      *
