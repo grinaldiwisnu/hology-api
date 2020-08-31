@@ -123,11 +123,20 @@ class TeamController extends Controller
         // store data to database
         try {
             $team->save();
+
+            // geenrate join token
+            $joinToken = $this->encodeToken($team->id);
+            $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
+
+            Team::where('team_id', $team->id)
+                ->update([
+                    'team_join_url' => $team->team_join_url
+                ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => $e
             ], 500);
         }
 
@@ -145,21 +154,6 @@ class TeamController extends Controller
                 'success' => false,
                 'data' => null,
                 'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
-            ], 500);
-        }
-
-        $joinToken = $this->encodeToken($team->team_id);
-
-        $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
-
-        try {
-            Team::where('team_id', $team->team_id)
-                ->update(['team_join_url' => $team->team_join_url]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'data' => null,
-                'message' => $e
             ], 500);
         }
 
@@ -275,7 +269,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => $e
             ], 500);
         }
 
