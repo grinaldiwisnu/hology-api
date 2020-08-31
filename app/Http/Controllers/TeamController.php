@@ -67,7 +67,30 @@ class TeamController extends Controller
         $returnTeams = [];
 
         foreach ($teams as $team) {
-            $team->members = DetailTeam::where('team_id', $team->team_id)->get();
+            // get detail teams data
+            $detailTeam = DetailTeam::where('team_id', $team->team_id)
+                ->get();
+
+            // define member obj in team
+            $members = [];
+
+            // get each member data
+            foreach($detailTeam as $memberRelation) {
+                $member = User::where('user_id', $memberRelation->user_id)
+                    ->first();
+
+                // unset password
+                unset($member->password);
+
+                // set detail to member
+                $member->user_identity_pic = $memberRelation->detail_team_identity_pic;
+                $member->user_proof = $memberRelation->detail_team_proof;
+
+                array_push($members, $member);
+            }
+
+            $team->members = $members;
+
 
             array_push($returnTeams, $team);
         }
@@ -182,12 +205,20 @@ class TeamController extends Controller
             $team = Team::where('team_id', $id)
                 ->first();
 
+            if (!$team) {
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Team not found!'
+                ]);
+            }
+
             // get detail teams data
-            $detailTeam = DetailTeam::where('team_id')
+            $detailTeam = DetailTeam::where('team_id', $id)
                 ->get();
 
             // define member obj in team
-            $team->members = [];
+            $members = [];
 
             // get each member data
             foreach($detailTeam as $memberRelation) {
@@ -201,8 +232,10 @@ class TeamController extends Controller
                 $member->user_identity_pic = $memberRelation->detail_team_identity_pic;
                 $member->user_proof = $memberRelation->detail_team_proof;
 
-                array_push($team->member, $member);
+                array_push($members, $member);
             }
+
+            $team->members = $members;
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
