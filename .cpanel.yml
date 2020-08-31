@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/afikrimx/hology-api.afikrim.xyz
+    - /bin/cp -r ./* $DEPLOYPATH
+    - cd $DEPLOYPATH
+    - composer install
+    - echo "<?php" > index.php
+    - echo "$app = require __DIR__.'/bootstrap/app.php';" >> index.php
+    - echo "$app->run();" >> index.php
