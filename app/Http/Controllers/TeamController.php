@@ -118,6 +118,7 @@ class TeamController extends Controller
         $team->team_lead = $request->lead;
         $team->team_payment_proof = "";
         $team->team_status = 0;
+        $team->team_join_url = "";
 
         // store data to database
         try {
