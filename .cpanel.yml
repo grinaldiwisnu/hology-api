@@ -8,3 +8,6 @@ deployment:
     - echo "<?php" > index.php
     - echo "$app = require __DIR__.'/bootstrap/app.php';" >> index.php
     - echo "$app->run();" >> index.php
+    - mkdir storage/app/teams/identity-pics
+    - mkdir storage/app/teams/payments
+    - mkdir storage/app/teams/proofs
