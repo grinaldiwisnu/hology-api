@@ -49,8 +49,17 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // secure api
     $router->group(['middleware' => 'auth'], function () use ($router) {
 
+        // Users
+        if (env('APP_ENV') !== 'production') {
+            $router->get('users', ['uses' => 'UserController@index']);
+            $router->get('users/{id}', ['uses' => 'UserController@show']);
+        }
+        $router->get('users/profile', ['uses' => 'UserController@profile']);
+
         // Teams
-        $router->get('teams', ['uses' => 'TeamController@index']);
+        if (env('APP_ENV') !== 'production') {
+            $router->get('teams', ['uses' => 'TeamController@index']);
+        }
         $router->post('teams', ['uses' => 'TeamController@store']);
         $router->get('teams/{id}', ['uses' => 'TeamController@show']);
         $router->post('teams/add', ['uses' => 'TeamController@addMember']);
