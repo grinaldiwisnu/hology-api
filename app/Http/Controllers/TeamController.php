@@ -130,7 +130,6 @@ class TeamController extends Controller
             'institution_id' => 'required',
             'competition_id' => 'required',
             'name' => 'required|unique:teams,team_name',
-            'lead' => 'required|unique:teams,team_lead'
         ]);
 
         // check validation fails
@@ -151,7 +150,7 @@ class TeamController extends Controller
         $team->institution_id = $request->institution_id;
         $team->competition_id = $request->competition_id;
         $team->team_name = $request->name;
-        $team->team_lead = $request->lead;
+        $team->team_lead = $request->auth->user_id;
         $team->team_payment_proof = "";
         $team->team_status = 0;
         $team->team_join_url = "";
