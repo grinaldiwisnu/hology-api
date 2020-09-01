@@ -161,7 +161,7 @@ class TeamController extends Controller
 
             // geenrate join token
             $joinToken = $this->encodeToken($team->team_id);
-            $team->team_join_url = env('CLIENT_URL') . "?token=$joinToken";
+            $team->team_join_url = env('CLIENT_URL') . $joinToken;
 
             Team::where('team_id', $team->team_id)
                 ->update([
