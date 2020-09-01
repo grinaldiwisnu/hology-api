@@ -394,17 +394,17 @@ class TeamController extends Controller
         // get team;
         $detailTeam = Team::where('team_id', $id)->first();
 
-        if ($detailTeam->team_payment_proof) {
-            // split ext and filename
-            [$ext, $filename] = explode("-", $detailTeam->team_payment_proof, 2);
+        /* if ($detailTeam->team_payment_proof) { */
+        /*     // split ext and filename */
+        /*     [$ext, $filename] = explode("-", $detailTeam->team_payment_proof, 2); */
 
-            // define path
-            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+        /*     // define path */
+        /*     $filepath = storage_path("app/teams/proofs/$filename.$ext"); */
 
-            // delete file if exists
-            if (file_exists($filepath))
-                unlink($filepath);
-        }
+        /*     // delete file if exists */
+        /*     if (file_exists($filepath)) */
+        /*         unlink($filepath); */
+        /* } */
 
         // Get file from request
         $file = $request->file('payment_proof');
@@ -546,21 +546,21 @@ class TeamController extends Controller
         }
 
         // get relation;
-        $detailTeam = DetailTeam::where('team_id', $id)
-            ->where('user_id', $request->auth->user_id)
-            ->first();
+        /* $detailTeam = DetailTeam::where('team_id', $id) */
+        /*     ->where('user_id', $request->auth->user_id) */
+        /*     ->first(); */
 
-        if ($detailTeam->detail_team_identity_pic) {
-            // split ext and filename
-            [$ext, $filename] = explode("-", $detailTeam->detail_team_identity_pic, 2);
+        /* if ($detailTeam->detail_team_identity_pic) { */
+        /*     // split ext and filename */
+        /*     [$ext, $filename] = explode("-", $detailTeam->detail_team_identity_pic, 2); */
 
-            // define path
-            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+        /*     // define path */
+        /*     $filepath = storage_path("app/teams/proofs/$filename.$ext"); */
 
-            // delete file if exists
-            if (file_exists($filepath))
-                unlink($filepath);
-        }
+        /*     // delete file if exists */
+        /*     if (file_exists($filepath)) */
+        /*         unlink($filepath); */
+        /* } */
 
         // Get file from request
         $file = $request->file('identity');
@@ -622,7 +622,7 @@ class TeamController extends Controller
 
         // fill path with data from table
         foreach ($detailTeams as $value) {
-            $paths[$value->user_id] = url("api/teams/$id/proofs/") . $value->detail_team_proof;
+            $paths[$value->user_id] = url("api/teams/$id/proofs/") . "/$value->detail_team_proof";
         }
 
         // return path to user
@@ -707,17 +707,17 @@ class TeamController extends Controller
             ->where('user_id', $request->auth->user_id)
             ->first();
 
-        if ($detailTeam->detail_team_proof) {
-            // split ext and filename
-            [$ext, $filename] = explode("-", $detailTeam->detail_team_proof, 2);
+        /* if (isset($detailTeam->detail_team_proof)) { */
+        /*     // split ext and filename */
+        /*     [$ext, $filename] = explode("-", $detailTeam->detail_team_proof, 2); */
 
-            // define path
-            $filepath = storage_path("app/teams/proofs/$filename.$ext");
+        /*     // define path */
+        /*     $filepath = storage_path("app/teams/proofs/$filename.$ext"); */
 
-            // delete file if exists
-            if (file_exists($filepath))
-                unlink($filepath);
-        }
+        /*     // delete file if exists */
+        /*     if (file_exists($filepath)) */
+        /*         unlink($filepath); */
+        /* } */
 
         // Get file from request
         $file = $request->file('proof');
