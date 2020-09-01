@@ -50,11 +50,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['middleware' => 'auth'], function () use ($router) {
 
         // Users
+        $router->get('profiles', ['uses' => 'UserController@profile']);
         if (env('APP_ENV') !== 'production') {
             $router->get('users', ['uses' => 'UserController@index']);
             $router->get('users/{id}', ['uses' => 'UserController@show']);
         }
-        $router->get('users/profile', ['uses' => 'UserController@profile']);
 
         // Teams
         if (env('APP_ENV') !== 'production') {

@@ -133,8 +133,8 @@ class UserController extends Controller
                     ->first();
 
                 // set detail to member data in team
-                $teamRelation->user_identity_pic = $teamRelation->detail_team_identity_pic;
-                $teamRelation->user_proof = $teamRelation->detail_team_proof;
+                $team->user_identity_pic = $teamRelation->detail_team_identity_pic;
+                $team->user_proof = $teamRelation->detail_team_proof;
 
                 array_push($teams, $team);
             }

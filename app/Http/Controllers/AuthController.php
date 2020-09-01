@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailTeam;
+use App\Models\Team;
 use App\Models\User;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
@@ -61,6 +63,21 @@ class AuthController extends Controller
             ], 400);
         } else {
             $user = User::where('user_email', $request->email)->first();
+
+            $detailTeams = DetailTeam::where('user_id', $user->user_id)->get();
+
+            $teams = [];
+            foreach ($detailTeams as $detailTeam) {
+                $team = Team::where('team_id', $detailTeam->team_id)
+                    ->first();
+
+                $team->user_identity_pic = $detailTeam->detail_team_identity_pic;
+                $team->user_proof = $detailTeam->detail_team_proof;
+
+                array_push($teams, $team);
+            }
+
+            $user->teams = $teams;
 
             if (!$user) {
                 return response()->json([
