@@ -305,12 +305,30 @@ class TeamController extends Controller
             ->first();
 
         if ($team->institution_id != $request->auth->institution_id)
-            return resopnse()->json([
+            return response()->json([
                 'success' => false,
                 'data' => null,
                 'message' => 'You must from the same institution'
             ], 403);
-
+        
+        $userHasJoined = DetailTeam::where('team_id', $payload->sub->team_id)->where('user_id', $request->auth->user_id)->count();
+        
+        if ($userHasJoined > 0)
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User already joined the team'
+            ], 403);
+        
+        $usersCount = DetailTeam::where('team_id', $payload->sub->team_id)->count();
+        
+        if ($usersCount == 3)
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Team is full'
+            ], 403);
+        
         // define new relation
         $relation = new DetailTeam();
 

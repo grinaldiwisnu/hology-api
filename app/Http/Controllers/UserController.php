@@ -120,26 +120,20 @@ class UserController extends Controller
                 ]);
             }
 
-            // get detail users data
-            $detailTeam = DetailTeam::where('user_id', $user->user_id)
-                ->get();
+            $detailTeams = DetailTeam::where('user_id', $user->user_id)->get();
 
-            // define member obj in user
             $teams = [];
-
-            // get each member data
-            foreach($detailTeam as $teamRelation) {
-                $team = Team::where('team_id', $teamRelation->team_id)
+            foreach ($detailTeams as $detailTeam) {
+                $team = Team::where('team_id', $detailTeam->team_id)
                     ->first();
 
-                // set detail to member data in team
-                $team->user_identity_pic = $teamRelation->detail_team_identity_pic;
-                $team->user_proof = $teamRelation->detail_team_proof;
+                $team->user_identity_pic = $detailTeam->detail_team_identity_pic;
+                $team->user_proof = $detailTeam->detail_team_proof;
 
                 array_push($teams, $team);
             }
-
             $user->teams = $teams;
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

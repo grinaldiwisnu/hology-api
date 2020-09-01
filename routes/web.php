@@ -51,8 +51,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Users
         $router->get('profiles', ['uses' => 'UserController@profile']);
+        $router->get('users', ['uses' => 'UserController@index']);
+
         if (env('APP_ENV') !== 'production') {
-            $router->get('users', ['uses' => 'UserController@index']);
             $router->get('users/{id}', ['uses' => 'UserController@show']);
         }
 
