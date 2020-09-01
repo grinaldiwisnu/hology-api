@@ -299,6 +299,18 @@ class TeamController extends Controller
             ], 500);
         }
 
+        $team_id = $payload->sub->team_id;
+
+        $team = Team::where('team_id', $team_id)
+            ->first();
+
+        if ($team->institution_id != $request->auth->institution_id)
+            return resopnse()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'You must from the same institution'
+            ], 403);
+
         // define new relation
         $relation = new DetailTeam();
 

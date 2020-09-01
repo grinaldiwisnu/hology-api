@@ -116,6 +116,15 @@ class AuthController extends Controller
             'institution' => 'required|exists:institutions,institution_id'
         ]);
 
+        $usersCount = User::where('institution_id', $request->institution)->count();
+
+        if ($userCount >= 3)
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => '3 users per institution'
+            ], 403);
+
         if ($validation->fails()) {
             return response()->json([
                 'success' => false,
