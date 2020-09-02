@@ -409,7 +409,7 @@ class TeamController extends Controller
 
         // Validate file
         $validation = Validator::make($request->file(), [
-            'payment_proof' => 'required|mimes:png,jpg|max:2048'
+            'payment_proof' => 'required|mimes:png,jpg,jpeg|max:4096'
         ]);
 
         // If validation fails
@@ -563,7 +563,7 @@ class TeamController extends Controller
 
         // Validate file
         $validation = Validator::make($request->file(), [
-            'identity' => 'required|mimes:png,jpg|max:2048'
+            'identity' => 'required|mimes:png,jpg,jpeg|max:4096'
         ]);
 
         // If validation fails
