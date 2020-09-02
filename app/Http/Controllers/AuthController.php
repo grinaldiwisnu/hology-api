@@ -110,7 +110,8 @@ class AuthController extends Controller
         $validation = Validator::make($request->all(), [
             'fullname' => 'required',
             'email' => 'required|email|unique:users,user_email',
-            'password' => 'required|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/',
+//             'password' => 'required|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/',
+            'password' => 'required|regex:/^[a-zA-Z\d]{8,25}$/',
             'gender' => 'required|boolean',
             'birthdate' => 'required|date|before:today',
             'institution' => 'required|exists:institutions,institution_id'
