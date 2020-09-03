@@ -77,4 +77,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('teams/{id}/proofs', ['uses' => 'TeamController@uploadProof']);
         });
     });
+
+    $router->group(['prefix' => 'admin'], function () use ($router) {
+        $router->post('auth', ['uses' => 'AdminController@auth']);
+
+        $router->group(['middleware' => 'admin', 'prefix' => 'dashboard'], function () use ($router) {
+            $router->get('teams', ['uses' => 'DashboardController@getAllTeam']);
+            $router->get('users', ['uses' => 'DashboardController@getAllUser']);
+            $router->get('users', ['uses' => 'DashboardController@getAllCompetition']);
+
+            $router->post('register', ['uses' => 'AdminController@register']);
+        });
+    });
 });
