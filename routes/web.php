@@ -84,7 +84,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->group(['middleware' => 'admin', 'prefix' => 'dashboard'], function () use ($router) {
             $router->get('teams', ['uses' => 'DashboardController@getAllTeam']);
             $router->get('users', ['uses' => 'DashboardController@getAllUser']);
-            $router->get('users', ['uses' => 'DashboardController@getAllCompetition']);
+            $router->get('competitions', ['uses' => 'DashboardController@getAllCompetition']);
 
             $router->post('register', ['uses' => 'AdminController@register']);
         });

@@ -79,7 +79,7 @@ class AdminController extends Controller
             'fullname' => 'required',
             'email' => 'required|email|unique:users,user_email',
             'password' => 'required|regex:/^[a-zA-Z\d]{8,25}$/',
-            'id_role' => 'required|number'
+            'role' => 'required'
         ]);
 
         if ($validation->fails()) {
@@ -93,7 +93,7 @@ class AdminController extends Controller
             $admin->admin_name = $request->fullname;
             $admin->admin_email = $request->email;
             $admin->admin_password = Hash::make($request->password);
-            $admin->admin_role = $request->id_role;
+            $admin->admin_role = $request->role;
             try {
                 if ($admin->save()) {
                     return response()->json([

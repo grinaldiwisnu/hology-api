@@ -19,7 +19,7 @@ class DashboardController extends Controller
         //
     }
 
-    public function getAllTeam()
+    public function getAllTeam(Request $request)
     {
         $teams = Team::all();
 
@@ -38,7 +38,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getAllUser()
+    public function getAllUser(Request $request)
     {
         $users = User::all();
 
@@ -57,7 +57,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getAllCompetition()
+    public function getAllCompetition(Request $request)
     {
         $competitions = Competition::all();
 
