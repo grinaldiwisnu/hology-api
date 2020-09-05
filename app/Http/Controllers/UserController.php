@@ -216,7 +216,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => $e
             ], 500);
         }
     }
@@ -319,5 +319,51 @@ class UserController extends Controller
             'data' => null,
             'message' => 'Berhasil memperbarui password!'
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'email' => 'unique:users,user_email',
+            'password' => 'regex:/^[a-zA-Z\d]{8,25}$/',
+            'gender' => 'boolean',
+            'birthdate' => 'date|before:today',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $validation->errors()
+            ], 400);
+        }
+
+        try {
+            $userModel = [];
+            $user = User::where('user_id', $request->auth->id)
+                ->first();
+
+            $userModel['user_fullname'] = $request->post('fullname') ?? $user->user_fullname;
+            $userModel['user_email'] = $request->post('email') ?? $user->user_email;
+            $userModel['user_name'] = $request->post('name') ?? $user->user_name;
+            $userModel['user_password'] = Hash::make($request->post('password')) ?? $user->user_password;
+            $userModel['user_gender'] = $request->post('gender') ?? $user->user_gender;
+            $userModel['user_birthdate'] = $request->post('birthdate') ?? $user->user_birthdate;
+
+            User::where('user_id', $request->auth->id)
+                ->update($userModel);
+
+            return response()->json([
+                'success' => true,
+                'data' => $userModel,
+                'message' => 'Berhasil memperbarui data!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Sorry, but the server is gone wrong.'
+            ], 500);
+        }
     }
 }
