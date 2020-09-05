@@ -19,22 +19,6 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/{id}/lol/{lol}', function (Request $request, $id, $lol) use ($router) {
-    echo $id, $lol;
-    die();
-
-    $file = $request->file('payment_proof');
-
-    $originalName = $file->getClientOriginalName();
-    $mimeType = $file->getClientMimeType();
-
-    move_uploaded_file($file->getPathname(), storage_path("/app/$originalName"));
-
-    $newFile = file_get_contents(storage_path("/app/$originalName"));
-
-    return response($newFile, 200, ['Content-Type' => $mimeType]);
-});
-
 $router->group(['prefix' => 'api'], function () use ($router) {
     // TODO: Sign routes
 
@@ -51,17 +35,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Users
         $router->get('profiles', ['uses' => 'UserController@profile']);
-        $router->get('users', ['uses' => 'UserController@index']);
-
-        if (env('APP_ENV') !== 'production') {
-            $router->get('users/{id}', ['uses' => 'UserController@show']);
-        }
 
         // Teams
-        if (env('APP_ENV') !== 'production') {
-            $router->get('teams', ['uses' => 'TeamController@index']);
-        }
-        $router->post('teams', ['uses' => 'TeamController@store']);
         $router->get('teams/{id}', ['uses' => 'TeamController@show']);
         $router->post('teams/add', ['uses' => 'TeamController@addMember']);
 
@@ -82,9 +57,18 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('auth', ['uses' => 'AdminController@auth']);
 
         $router->group(['middleware' => 'admin', 'prefix' => 'dashboard'], function () use ($router) {
-            $router->get('teams', ['uses' => 'DashboardController@getAllTeam']);
-            $router->get('users', ['uses' => 'DashboardController@getAllUser']);
+            // Teams
+            $router->get('teams', ['uses' => 'TeamController@index']);
+            $router->get('teams/{id}', ['uses' => 'TeamController@show']);
+            $router->put('teams/{id}', ['uses' => 'TeamController@updateStatus']);
+
+            // Users
+            $router->get('users', ['uses' => 'UserController@index']);
+            $router->get('users/{id}', ['uses' => 'UserController@show']);
+
+            // Competitions
             $router->get('competitions', ['uses' => 'DashboardController@getAllCompetition']);
+            $router->get('competitions/{id}/teams', ['uses' => 'CompetitionController@showTeams']);
 
             $router->post('register', ['uses' => 'AdminController@register']);
         });

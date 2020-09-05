@@ -796,6 +796,32 @@ class TeamController extends Controller
         // TODO: Update team data
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $validation = Validator::make($request->all(), [
+            'approve' => 'required', 
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'error' => $validation->errors(),
+            ]);
+        }
+
+        try {
+            Team::where(['team_id' => $id])
+                ->update(['team_status', $request->approve]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+            ], 500);
+        }
+    }
+
     /**
      * Delete team
      *

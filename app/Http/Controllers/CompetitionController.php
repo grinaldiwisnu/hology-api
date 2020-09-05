@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Competition;
+use App\Models\Team;
 
 class CompetitionController extends Controller
 {
@@ -29,13 +30,13 @@ class CompetitionController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'Data is empty, add institution first'
+                'message' => 'Data is empty, add competition first'
             ], 200);
         } else {
             return response()->json([
                 'success' => true,
                 'data' => $result,
-                'message' => 'Success fetch institution data'
+                'message' => 'Success fetch competition data'
             ], 200);
         }
     }
@@ -55,8 +56,28 @@ class CompetitionController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $result,
-                'message' => 'Success fetch institution data'
+                'message' => 'Success fetch competition data'
             ], 200);
+        }
+    }
+
+    public function showTeams($id)
+    {
+        try {
+            $teams = Team::where(['competition_id', $id])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $teams,
+                'message' => 'Success fetch competition data'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+            ], 500);
         }
     }
 }
