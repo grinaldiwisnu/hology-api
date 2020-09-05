@@ -280,19 +280,19 @@ class TeamController extends Controller
         try {
             $payload = $this->decodeToken($join_token);
         } catch (SignatureInvalidException $sig) {
-            response()->json([
+            return response()->json([
                 'success' => false,
                 'data' => null,
                 'message' => 'Your format is wrong'
             ], 403);
         } catch (ExpiredException $exp) {
-            response()->json([
+            return response()->json([
                 'success' => false,
                 'data' => null,
                 'message' => 'Your link is expired'
             ], 406);
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'success' => false,
                 'data' => null,
                 'message' => 'Oops! Sorry, but the server is gone wrong.'
@@ -806,7 +806,7 @@ class TeamController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'error' => $validation->errors(),
+                'message' => $validation->errors(),
             ]);
         }
 
