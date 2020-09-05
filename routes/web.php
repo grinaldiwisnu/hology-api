@@ -61,6 +61,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('teams', ['uses' => 'TeamController@index']);
             $router->get('teams/{id}', ['uses' => 'TeamController@show']);
             $router->put('teams/{id}', ['uses' => 'TeamController@updateStatus']);
+            $router->get('teams/{id}/payment-proof', ['uses' => 'TeamController@getPaymentProof']);
+            $router->get('teams/{id}/identity-pics', ['uses' => 'TeamController@getIdentities']);
+            $router->get('teams/{id}/identity-pics/{filename}', ['uses' => 'TeamController@getIdentity']);
+            $router->get('teams/{id}/proofs', ['uses' => 'TeamController@getProofs']);
+            $router->get('teams/{id}/proofs/{filename}', ['uses' => 'TeamController@getProof']);
 
             // Users
             $router->get('users', ['uses' => 'UserController@index']);
