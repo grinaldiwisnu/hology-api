@@ -26,6 +26,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('register', ['uses' => 'AuthController@register']);
     $router->post('login', ['uses' => 'AuthController@auth']);
     $router->post('refresh', ['uses' => 'AuthController@refresh']);
+    $router->post('forgot-password', ['uses' => 'UserController@forgetPassword']);
+    $router->post('forgot-token', ['uses' => 'UserController@forgetToken']);
+    $router->post('new-password', ['uses' => 'UserController@newPassword']);
 
     // institutions
     $router->get('institutions', ['uses' => 'InstitutionController@institutions']);
