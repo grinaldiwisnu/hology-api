@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTeam;
+use App\Models\Institution;
 use App\Models\Team;
 use App\Models\User;
 use Firebase\JWT\ExpiredException;
@@ -124,6 +125,17 @@ class AuthController extends Controller
                 'message' => $validation->errors()
             ], 400);
         } else {
+            $institutionId = $request->institution;
+
+            if ($request->institution == 9999) {
+                $newInstitution = new Institution();
+                $newInstitution->institution_name = $request->institution_custom;
+
+                if ($newInstitution->save()) {
+                    $institutionId = $newInstitution->institution_id;
+                }
+            }
+
             $user = new User();
             $user->user_fullname = $request->fullname;
             $user->user_email = $request->email;
@@ -132,7 +144,7 @@ class AuthController extends Controller
             // $user->img_url = $request->image;
             $user->user_birthdate = $request->birthdate;
             $user->user_gender = $request->gender;
-            $user->institution_id = $request->institution;
+            $user->institution_id = $institutionId;
             try {
                 if ($user->save()) {
                     return response()->json([
