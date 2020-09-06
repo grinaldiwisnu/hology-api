@@ -115,7 +115,8 @@ class AuthController extends Controller
             'password' => 'required|regex:/^[a-zA-Z\d]{8,25}$/',
             'gender' => 'required|boolean',
             'birthdate' => 'required|date|before:today',
-            'institution' => 'required|exists:institutions,institution_id'
+            // 'institution' => 'required|exists:institutions,institution_id'
+            'institution' => 'required'
         ]);
 
         if ($validation->fails()) {
