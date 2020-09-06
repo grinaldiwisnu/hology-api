@@ -8,13 +8,15 @@ class Institution extends Model
 {
 
     protected $table = 'institutions';
+
+    protected $primaryKey = 'institution_id';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'institution_id', 'institution_name',
+        'institution_name',
     ];
 
     public $timestamps = false;
