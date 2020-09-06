@@ -132,8 +132,16 @@ class AuthController extends Controller
                 $newInstitution = new Institution();
                 $newInstitution->institution_name = $request->institution_custom;
 
-                if ($newInstitution->save()) {
-                    $institutionId = $newInstitution->institution_id;
+                try {
+                    if ($newInstitution->save()) {
+                        $institutionId = $newInstitution->institution_id;
+                    }
+                } catch (\Throwable $th) {
+                    return response()->json([
+                        'success' => false,
+                        'data' => null,
+                        'message' => $th
+                    ], 400);
                 }
             }
 
