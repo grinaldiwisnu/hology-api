@@ -495,7 +495,7 @@ class TeamController extends Controller
 
         // fill path with data from table
         foreach ($detailTeams as $value) {
-            $paths[$value->user_id] = url("api/teams/$id/identity-pics/") . "/$value->detail_team_identity_pic";
+            $paths[$value->user_id] = url("teams/$id/identity-pics/") . "/$value->detail_team_identity_pic";
         }
 
         // return path to user
@@ -812,7 +812,7 @@ class TeamController extends Controller
 
         try {
             Team::where(['team_id' => $id])
-                ->update(['team_status', $request->approve]);
+                ->update(['team_status' => $request->approve]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -820,6 +820,14 @@ class TeamController extends Controller
                 'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
             ], 500);
         }
+        
+        return response()->json([
+            'success' => true,
+            'data' => null,
+            'message' => 'Team status updated'
+        ]);
+
+        
     }
 
     /**
