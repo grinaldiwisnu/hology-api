@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTeam;
+use App\Models\Institution;
 use App\Models\Team;
 use App\Models\User;
 use Firebase\JWT\ExpiredException;
@@ -114,7 +115,8 @@ class AuthController extends Controller
             'password' => 'required|regex:/^[a-zA-Z\d]{8,25}$/',
             'gender' => 'required|boolean',
             'birthdate' => 'required|date|before:today',
-            'institution' => 'required|exists:institutions,institution_id'
+            // 'institution' => 'required|exists:institutions,institution_id'
+            'institution' => 'required'
         ]);
 
         if ($validation->fails()) {
@@ -124,6 +126,25 @@ class AuthController extends Controller
                 'message' => $validation->errors()
             ], 400);
         } else {
+            $institutionId = $request->institution;
+
+            if ($request->institution == 9999) {
+                $newInstitution = new Institution();
+                $newInstitution->institution_name = $request->institution_custom;
+
+                try {
+                    if ($newInstitution->save()) {
+                        $institutionId = $newInstitution->institution_id;
+                    }
+                } catch (\Throwable $th) {
+                    return response()->json([
+                        'success' => false,
+                        'data' => null,
+                        'message' => $th
+                    ], 400);
+                }
+            }
+
             $user = new User();
             $user->user_fullname = $request->fullname;
             $user->user_email = $request->email;
@@ -132,7 +153,7 @@ class AuthController extends Controller
             // $user->img_url = $request->image;
             $user->user_birthdate = $request->birthdate;
             $user->user_gender = $request->gender;
-            $user->institution_id = $request->institution;
+            $user->institution_id = $institutionId;
             try {
                 if ($user->save()) {
                     return response()->json([
