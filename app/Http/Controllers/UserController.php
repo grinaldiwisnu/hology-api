@@ -211,7 +211,20 @@ class UserController extends Controller
 
             $url = env('CLIENT_FORGOT_URL') . $token;
 
-            Mail::to($request->post('email'))->send(new ForgetPassword($url));
+            /* Mail::to($request->post('email'))->send(new ForgetPassword($url)); */
+            Mail::send('emails.user.forgotPassword', [
+                'url' => $url
+            ], function ($message) use ($user) {
+                $message->to($user->user_email, 'Hology')
+                    ->subject('Reset password link.');
+                $message->from('afikrim@gmail.com', 'no-reply');
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => null,
+                'message' => 'Reset link send to your email.'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

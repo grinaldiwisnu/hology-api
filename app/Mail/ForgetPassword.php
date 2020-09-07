@@ -18,7 +18,7 @@ class ForgetPassword extends Mailable {
 
     public function build()
     {
-        return $this->from('no-reply@hology.ub.ac.id', 'No Reply')
+        return $this->from('no-reply', 'No Reply')
                     ->view('emails.user.forgotPassword')
                     ->with([
                         'uri' => $this->uri
