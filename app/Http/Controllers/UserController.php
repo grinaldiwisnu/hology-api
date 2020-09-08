@@ -353,7 +353,7 @@ class UserController extends Controller
 
         try {
             $userModel = [];
-            $user = User::where('user_id', $request->auth->id)
+            $user = User::where('user_id', $request->auth->user_id)
                 ->first();
 
             $userModel['user_fullname'] = $request->post('fullname') ?? $user->user_fullname;
@@ -363,7 +363,7 @@ class UserController extends Controller
             $userModel['user_gender'] = $request->post('gender') ?? $user->user_gender;
             $userModel['user_birthdate'] = $request->post('birthdate') ?? $user->user_birthdate;
 
-            User::where('user_id', $request->auth->id)
+            User::where('user_id', $request->auth->user_id)
                 ->update($userModel);
 
             return response()->json([
