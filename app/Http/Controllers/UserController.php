@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ForgetPassword;
 use App\Models\DetailTeam;
 use App\Models\Team;
 use App\Models\User;
@@ -11,8 +10,10 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 
 class UserController extends Controller
 {
@@ -30,10 +31,10 @@ class UserController extends Controller
     private function encodeToken($sub)
     {
         $payload = [
-            'iss'   => 'triplen-jwt-token',
-            'sub'   => $sub,
-            'iat'   => time(),
-            'exp'   => time() + (24 * 60 * 60 * 7)
+            'iss' => 'triplen-jwt-token',
+            'sub' => $sub,
+            'iat' => time(),
+            'exp' => time() + (24 * 60 * 60 * 7),
         ];
 
         return JWT::encode($payload, env('APP_JWT'), 'HS256');
@@ -65,7 +66,7 @@ class UserController extends Controller
             $teams = [];
 
             // get each member data
-            foreach($detailTeam as $teamRelation) {
+            foreach ($detailTeam as $teamRelation) {
                 $team = Team::where('team_id', $teamRelation->team_id)
                     ->first();
 
@@ -78,14 +79,13 @@ class UserController extends Controller
 
             $user->teams = $teams;
 
-
             array_push($returnUsers, $user);
         }
 
         return response()->json([
             'success' => true,
             'data' => $returnUsers,
-            'message' => 'Successfully get all users'
+            'message' => 'Successfully get all users',
         ]);
     }
 
@@ -102,7 +102,7 @@ class UserController extends Controller
                 return response()->json([
                     'success' => false,
                     'data' => null,
-                    'message' => 'User not found!'
+                    'message' => 'User not found!',
                 ]);
             }
 
@@ -114,7 +114,7 @@ class UserController extends Controller
             $teams = [];
 
             // get each member data
-            foreach($detailTeam as $teamRelation) {
+            foreach ($detailTeam as $teamRelation) {
                 $team = Team::where('team_id', $teamRelation->team_id)
                     ->first();
 
@@ -130,14 +130,14 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
             'data' => $user,
-            'message' => 'Success fetch user'
+            'message' => 'Success fetch user',
         ]);
     }
 
@@ -152,7 +152,7 @@ class UserController extends Controller
                 return response()->json([
                     'success' => false,
                     'data' => null,
-                    'message' => 'User not found!'
+                    'message' => 'User not found!',
                 ]);
             }
 
@@ -169,35 +169,37 @@ class UserController extends Controller
                 array_push($teams, $team);
             }
             $user->teams = $teams;
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
             'data' => $user,
-            'message' => 'Success fetch user'
+            'message' => 'Success fetch user',
         ]);
     }
 
     public function forgetPassword(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         if ($validation->fails()) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $validation->errors()
+                'message' => $validation->errors(),
             ], 400);
         }
+
+        $mail = new PHPMailer(true);
 
         try {
             $user = User::where(['user_email' => $request->post('email')])
@@ -211,25 +213,37 @@ class UserController extends Controller
 
             $url = env('CLIENT_FORGOT_URL') . $token;
 
-            /* Mail::to($request->post('email'))->send(new ForgetPassword($url)); */
-            Mail::send('emails.user.forgotPassword', [
-                'url' => $url
-            ], function ($message) use ($user) {
-                $message->to($user->user_email, 'Hology')
-                    ->subject('Reset password link.');
-                $message->from('afikrim@gmail.com', 'no-reply');
-            });
+            //Server settings
+            $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+            $mail->isSMTP();
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = env('MAIL_PORT');
+
+            //Recipients
+            $mail->setFrom('no-reply@hology.ub.ac.id', 'Forget Password');
+            $mail->addAddress($user->user_email, $user->user_fullname);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Forget Password Reset Link';
+            $mail->Body = 'Click this link to reset your password <a href="' . $url . '">Reset Link</a>';
+
+            $mail->send();
 
             return response()->json([
                 'success' => true,
                 'data' => null,
-                'message' => 'Reset link send to your email.'
+                'message' => 'Reset link send to your email.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $e
+                'message' => $e,
             ], 500);
         }
     }
@@ -237,14 +251,14 @@ class UserController extends Controller
     public function forgetToken(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'token' => 'required'
+            'token' => 'required',
         ]);
 
         if ($validation->fails()) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $validation->errors()
+                'message' => $validation->errors(),
             ], 400);
         }
 
@@ -258,26 +272,26 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Your format is wrong'
+                'message' => 'Your format is wrong',
             ], 403);
         } catch (ExpiredException $exp) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Your link is expired'
+                'message' => 'Your link is expired',
             ], 406);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Sorry, but the server is gone wrong.'
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
             'data' => null,
-            'message' => 'Token valid'
+            'message' => 'Token valid',
         ]);
     }
 
@@ -285,17 +299,18 @@ class UserController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'email' => 'required|email',
-            'token' => 'required'
+            'token' => 'required',
+            'password' => 'required|regex:/^[a-zA-Z\d]{8,25}$/',
         ]);
 
         if ($validation->fails()) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $validation->errors()
+                'message' => $validation->errors(),
             ], 400);
         }
-        
+
         // post request params
         $reset_token = $request->post('token');
 
@@ -305,32 +320,32 @@ class UserController extends Controller
 
             User::where('user_email', $payload->sub->user_email)
                 ->update([
-                    'password' => Hash::make($request->post('password')),
+                    'user_password' => Hash::make($request->post('password')),
                 ]);
         } catch (SignatureInvalidException $sig) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Your format is wrong'
+                'message' => 'Your format is wrong',
             ], 403);
         } catch (ExpiredException $exp) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Your link is expired'
+                'message' => 'Your link is expired',
             ], 406);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Sorry, but the server is gone wrong.'
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
             'data' => null,
-            'message' => 'Berhasil memperbarui password!'
+            'message' => 'Berhasil memperbarui password!',
         ]);
     }
 
@@ -347,7 +362,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $validation->errors()
+                'message' => $validation->errors(),
             ], 400);
         }
 
@@ -366,13 +381,13 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $user,
-                'message' => 'Berhasil memperbarui data!'
+                'message' => 'Berhasil memperbarui data!',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Sorry, but the server is gone wrong.'
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
             ], 500);
         }
     }
