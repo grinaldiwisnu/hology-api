@@ -38,7 +38,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         // Users
         $router->get('profiles', ['uses' => 'UserController@profile']);
-        $router->put('update-profile', ['uses' => 'UserController@update']);
+        $router->post('update-profile', ['uses' => 'UserController@update']);
 
         // Teams
         $router->post('teams', ['uses' => 'TeamController@store']);

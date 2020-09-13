@@ -85,7 +85,7 @@ class AuthController extends Controller
                     'success' => true,
                     'data' => null,
                     'message' => 'User not found'
-                ], 401);
+                ], 404);
             } else {
                 if (Hash::check($request->password, $user->user_password))
                     return response()->json([

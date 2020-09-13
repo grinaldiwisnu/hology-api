@@ -352,23 +352,20 @@ class UserController extends Controller
         }
 
         try {
-            $userModel = [];
-            $user = User::where('user_id', $request->auth->user_id)
-                ->first();
+            $user = $request->auth;
 
-            $userModel['user_fullname'] = $request->post('fullname') ?? $user->user_fullname;
-            $userModel['user_email'] = $request->post('email') ?? $user->user_email;
-            $userModel['user_name'] = $request->post('name') ?? $user->user_name;
-            $userModel['user_password'] = Hash::make($request->post('password')) ?? $user->user_password;
-            $userModel['user_gender'] = $request->post('gender') ?? $user->user_gender;
-            $userModel['user_birthdate'] = $request->post('birthdate') ?? $user->user_birthdate;
+            $user->user_fullname = $request->fullname ?? $user->user_fullname;
+            $user->user_email = $request->email ?? $user->user_email;
+            $user->user_name = $request->name ?? $user->user_name;
+            $user->user_password = Hash::make($request->password);
+            $user->user_gender = $request->gender ?? $user->user_gender;
+            $user->user_birthdate = $request->birthdate ?? $user->user_birthdate;
 
-            User::where('user_id', $request->auth->user_id)
-                ->update($userModel);
+            $user->save();
 
             return response()->json([
                 'success' => true,
-                'data' => $userModel,
+                'data' => $user,
                 'message' => 'Berhasil memperbarui data!'
             ]);
         } catch (\Exception $e) {
