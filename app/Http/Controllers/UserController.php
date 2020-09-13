@@ -372,9 +372,11 @@ class UserController extends Controller
             $user->user_fullname = $request->fullname ?? $user->user_fullname;
             $user->user_email = $request->email ?? $user->user_email;
             $user->user_name = $request->name ?? $user->user_name;
-            $user->user_password = Hash::make($request->password);
             $user->user_gender = $request->gender ?? $user->user_gender;
             $user->user_birthdate = $request->birthdate ?? $user->user_birthdate;
+            
+            if (isset($request->password))
+                $user->user_password = Hash::make($request->password);
 
             $user->save();
 
