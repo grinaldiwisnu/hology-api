@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\User;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -115,6 +116,45 @@ class AdminController extends Controller
                     'message' => $th
                 ], 400);
             }
+        }
+    }
+
+    public function generatePassword(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+        
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $validation->errors()
+            ], 400);
+        }
+        
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 12; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        
+        try {
+            User::where(['user_email' => $request->email])
+        	->update(['user_password' => Hash::make($randomString)]);
+        
+            return response()->json([
+        	'success' => true,
+        	'data' => ['newPassword' => $randomString],
+        	'message' => 'User new Password'
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+        	'success' => false,
+        	'data' => null,
+        	'message' => $error
+            ]);
         }
     }
 }

@@ -74,6 +74,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             // Users
             $router->get('users', ['uses' => 'UserController@index']);
+            $router->post('generate-password', ['uses' => 'AdminController@generatePassword']);
             $router->get('users/{id}', ['uses' => 'UserController@show']);
 
             // Competitions
