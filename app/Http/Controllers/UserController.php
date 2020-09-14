@@ -222,6 +222,7 @@ class UserController extends Controller
             $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = env('MAIL_PORT');
+            $mail->SMTPDebug = 0;
 
             //Recipients
             $mail->setFrom('no-reply@hology.ub.ac.id', 'Forget Password');
