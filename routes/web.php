@@ -55,6 +55,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('teams/{id}/proofs', ['uses' => 'TeamController@getProofs']);
             $router->get('teams/{id}/proofs/{filename}', ['uses' => 'TeamController@getProof']);
             $router->post('teams/{id}/proofs', ['uses' => 'TeamController@uploadProof']);
+            $router->post('teams/{id}/submissions', ['uses' => 'SubmissionController@store']);
         });
     });
 
@@ -71,6 +72,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('teams/{id}/identity-pics/{filename}', ['uses' => 'TeamController@getIdentity']);
             $router->get('teams/{id}/proofs', ['uses' => 'TeamController@getProofs']);
             $router->get('teams/{id}/proofs/{filename}', ['uses' => 'TeamController@getProof']);
+            $router->get('teams/{id}/submissions', ['uses' => 'SubmissionController@show']);
             $router->delete('teams/{id}', ['uses' => 'AdminController@deleteTeam']);
 
             // Users
