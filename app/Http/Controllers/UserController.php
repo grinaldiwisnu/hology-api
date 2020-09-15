@@ -214,7 +214,7 @@ class UserController extends Controller
             $url = env('CLIENT_FORGOT_URL') . $token;
 
             //Server settings
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+            $mail->SMTPDebug = env('APP_ENV') == 'production' ? 0 : SMTP::DEBUG_SERVER;
             $mail->isSMTP();
             $mail->Host = env('MAIL_HOST');
             $mail->SMTPAuth = true;
