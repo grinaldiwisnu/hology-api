@@ -157,4 +157,45 @@ class AdminController extends Controller
             ]);
         }
     }
+
+    public function updateUser(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'email' => 'unique:users,user_email',
+            'gender' => 'boolean',
+            'birthdate' => 'date|before:today',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $validation->errors(),
+            ], 400);
+        }
+
+        try {
+            $user = $request->auth;
+
+            $user->user_fullname = $request->fullname ?? $user->user_fullname;
+            $user->user_email = $request->email ?? $user->user_email;
+            $user->user_name = $request->name ?? $user->user_name;
+            $user->user_gender = $request->gender ?? $user->user_gender;
+            $user->user_birthdate = $request->birthdate ?? $user->user_birthdate;
+            
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+                'message' => 'Berhasil memperbarui data user!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
+            ], 500);
+        }
+    }
 }
