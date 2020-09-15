@@ -201,22 +201,18 @@ class AdminController extends Controller
         }
     }
 
-    public function deleteTeam(Request $request)
+    public function deleteTeam($id)
     {
-        $validation = Validator::make($request->all(), [
-            'id' => 'required',
-        ]);
-
-        if ($validation->fails()) {
+        if (empty($id)) {
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => $validation->errors(),
+                'message' => "Set the parameter",
             ], 400);
         }
 
         try {
-            $team = Team::where('team_id', $request->id);
+            $team = Team::where('team_id', $id);
 
             $delete = DetailTeam::where('team_id', $team->team_id)->delete();
 
@@ -227,7 +223,7 @@ class AdminController extends Controller
                     'message' => 'Oops! Sorry, but the server is gone wrong.',
                 ], 500);
 
-            $deleteTeam = Team::where('team_id', $request->id)->delete();
+            $deleteTeam = Team::where('team_id', $team->team_id)->delete();
 
             if (!$deleteTeam)
                 return response()->json([
