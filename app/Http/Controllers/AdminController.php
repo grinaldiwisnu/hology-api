@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\User;
+use App\Models\Team;
+use App\Models\DetailTeam;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -189,6 +191,55 @@ class AdminController extends Controller
                 'success' => true,
                 'data' => $user,
                 'message' => 'Berhasil memperbarui data user!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
+            ], 500);
+        }
+    }
+
+    public function deleteTeam(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => $validation->errors(),
+            ], 400);
+        }
+
+        try {
+            $team = Team::where('team_id', $request->id);
+
+            $delete = DetailTeam::where('team_id', $team->team_id)->delete();
+
+            if (!$delete)
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Oops! Sorry, but the server is gone wrong.',
+                ], 500);
+
+            $deleteTeam = Team::where('team_id', $request->id)->delete();
+
+            if (!$deleteTeam)
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Oops! Sorry, but the server is gone wrong.',
+                ], 500);
+
+            return response()->json([
+                'success' => true,
+                'data' => null,
+                'message' => 'Berhasil menghapus data tim!',
             ]);
         } catch (\Exception $e) {
             return response()->json([

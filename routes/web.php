@@ -71,6 +71,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('teams/{id}/identity-pics/{filename}', ['uses' => 'TeamController@getIdentity']);
             $router->get('teams/{id}/proofs', ['uses' => 'TeamController@getProofs']);
             $router->get('teams/{id}/proofs/{filename}', ['uses' => 'TeamController@getProof']);
+            $router->delete('teams/{id}', ['uses' => 'AdminController@deleteTeam']);
 
             // Users
             $router->get('users', ['uses' => 'UserController@index']);
