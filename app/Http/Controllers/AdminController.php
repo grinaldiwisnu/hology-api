@@ -212,7 +212,7 @@ class AdminController extends Controller
         }
 
         try {
-            $team = Team::where('team_id', $id);
+            $team = Team::where('team_id', $id)->first();
 
             $delete = DetailTeam::where('team_id', $team->team_id)->delete();
 
