@@ -14,11 +14,10 @@ class SubmissionController extends Controller
 
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
         $validation = Validator($request->all(), [
             'link' => 'required|string|unique:submission,submission_link',
-            'team_id' => 'required|exists:teams,team_id'
         ]);
 
         if ($validation->fails()) {
@@ -30,13 +29,13 @@ class SubmissionController extends Controller
         }
 
         try {
-            // $team = Team::where('team_lead', $request->auth->user_id)->first();
+            $team = Team::where('team_id', $id)->first();
 
             $submission = new Submission();
 
             $submission->submission_link = $request->link;
             $submission->submission_phase = 0;
-            $submission->team_id = $request->team_id;
+            $submission->team_id = $team->team_id;
 
             $submission->save();
 
