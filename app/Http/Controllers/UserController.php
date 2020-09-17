@@ -164,7 +164,7 @@ class UserController extends Controller
                 $team = Team::where('team_id', $detailTeam->team_id)
                     ->first();
                 $submissions = Submission::where('team_id', $detailTeam->team_id)
-                    ->first();
+                    ->get();
 
                 $team->user_identity_pic = $detailTeam->detail_team_identity_pic;
                 $team->user_proof = $detailTeam->detail_team_proof;
