@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTeam;
+use App\Models\Submission;
 use App\Models\Team;
 use App\Models\User;
 use Firebase\JWT\ExpiredException;
@@ -162,9 +163,12 @@ class UserController extends Controller
             foreach ($detailTeams as $detailTeam) {
                 $team = Team::where('team_id', $detailTeam->team_id)
                     ->first();
+                $submissions = Submission::where('team_id', $detailTeam->team_id)
+                    ->first();
 
                 $team->user_identity_pic = $detailTeam->detail_team_identity_pic;
                 $team->user_proof = $detailTeam->detail_team_proof;
+                $team->submissions = $submissions;
 
                 array_push($teams, $team);
             }
@@ -375,7 +379,7 @@ class UserController extends Controller
             $user->user_name = $request->name ?? $user->user_name;
             $user->user_gender = $request->gender ?? $user->user_gender;
             $user->user_birthdate = $request->birthdate ?? $user->user_birthdate;
-            
+
             if (isset($request->password))
                 $user->user_password = Hash::make($request->password);
 
