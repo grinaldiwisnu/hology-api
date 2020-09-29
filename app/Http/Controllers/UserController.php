@@ -380,8 +380,9 @@ class UserController extends Controller
             $user->user_gender = $request->gender ?? $user->user_gender;
             $user->user_birthdate = $request->birthdate ?? $user->user_birthdate;
 
-            if (isset($request->password))
+            if (isset($request->password)) {
                 $user->user_password = Hash::make($request->password);
+            }
 
             $user->save();
 
@@ -389,6 +390,49 @@ class UserController extends Controller
                 'success' => true,
                 'data' => $user,
                 'message' => 'Berhasil memperbarui data!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
+            ], 500);
+        }
+    }
+
+    public function registerWebinar(Request $request)
+    {
+        try {
+            $user = $request->auth;
+
+            $user->user_register_in_webinar = true;
+
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+                'message' => 'Berhasil registrasi webinar',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Sorry, but the server is gone wrong.',
+            ], 500);
+        }
+    }
+
+    public function getWebinarParticipants(Request $request)
+    {
+        try {
+            $users = User::where('user_register_in_webinar', true)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $users,
+                'message' => 'Berhasil registrasi webinar',
             ]);
         } catch (\Exception $e) {
             return response()->json([

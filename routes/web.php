@@ -39,6 +39,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         // Users
         $router->get('profiles', ['uses' => 'UserController@profile']);
         $router->post('update-profile', ['uses' => 'UserController@update']);
+        $router->post('register-webinar', ['uses' => 'UserController@registerWebinar']);
 
         // Teams
         $router->post('teams', ['uses' => 'TeamController@store']);
@@ -77,6 +78,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             // Users
             $router->get('users', ['uses' => 'UserController@index']);
+            $router->get('webinar-participants', ['uses' => 'UserController@getWebinarParticipants']);
             $router->post('generate-password', ['uses' => 'AdminController@generatePassword']);
             $router->post('edit-users', ['uses' => 'AdminController@editUser']);
             $router->get('users/{id}', ['uses' => 'UserController@show']);
