@@ -6,6 +6,7 @@ use App\Models\DetailTeam;
 use App\Models\Submission;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Institution;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
@@ -357,7 +358,7 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'email' => 'unique:users,user_email',
+            'email' => 'email|unique:users,user_email',
             'password' => 'regex:/^[a-zA-Z\d]{8,25}$/',
             'gender' => 'boolean',
             'birthdate' => 'date|before:today',
@@ -428,6 +429,15 @@ class UserController extends Controller
         try {
             $users = User::where('user_register_in_webinar', true)
                 ->get();
+
+	    $i = 0;
+            foreach ($users as $user) {
+                $user->institution = Institution::where('institution_id', $user->institution_id)
+                    ->first();
+
+		$users[$i] = $user;
+		$i++;
+	    }
 
             return response()->json([
                 'success' => true,

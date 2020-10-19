@@ -225,6 +225,25 @@ class TeamController extends Controller
                 ]);
             }
 
+            // get join url
+            $joinUrl = $team->team_join_url;
+
+            // get token from url
+            $token = str_replace(env('CLIENT_URL'), "", $joinUrl);
+
+            try {
+                $payload = $this->decodeToken($join_token);
+            } catch (\Exception $e) {
+                $token = $this->encodeToken($team->team_id);
+
+                $joinUrl = env('CLIENT_URL') . $token;
+		$team->team_join_url = $joinUrl;
+	        Team::where('team_id', $id)
+                    ->update([
+                        'team_join_url' => $joinUrl
+                    ]);
+            }
+
             // get detail teams data
             $detailTeam = DetailTeam::where('team_id', $id)
                 ->get();
