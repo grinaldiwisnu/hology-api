@@ -101,7 +101,7 @@ class AcademyController extends Controller
             return response()->json([
                 'success' => false,
                 'data' => null,
-                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+                'message' => $e
             ], 500);
         }
 
@@ -171,6 +171,13 @@ class AcademyController extends Controller
                 'data' => null,
                 'message' => 'Academy user not found!'
             ], 404);
+
+        if (empty($academy->academy_payment_proof))
+            return response()->json([
+                'success' => 'false',
+                'data' => null,
+                'message' => 'Payment proof not uploaded yet!'
+            ], 400);
 
         // split ext and filename
         [$ext, $filename] = explode("-", $academy->academy_payment_proof, 2);

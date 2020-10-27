@@ -16,7 +16,7 @@ class CreateAcademyTable extends Migration
         Schema::create('academy', function (Blueprint $table) {
             $table->smallIncrements('academy_id');
             $table->unsignedSmallInteger('user_id');
-            $table->unsignedSmallInteger('academy_resume');
+            $table->string('academy_resume', 45);
             $table->string('academy_payment_proof', 45);
             $table->smallInteger('academy_status');
             $table->foreign('user_id')->references('user_id')->on('users');
