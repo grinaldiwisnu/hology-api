@@ -58,6 +58,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('teams/{id}/proofs', ['uses' => 'TeamController@uploadProof']);
             $router->post('teams/{id}/submissions', ['uses' => 'SubmissionController@store']);
         });
+
+        // Academy
+        $router->get('academy/{id}', ['uses' => 'AcademyController@show']);
+        $router->post('academy', ['uses' => 'AcademyController@store']);
+        $router->get('academy/{id}/proofs', ['uses' => 'AcademyController@getPaymentProof']);
+        $router->post('academy/{id}/proofs', ['uses' => 'AcademyController@UploadPaymentProof']);
     });
 
     $router->group(['prefix' => 'admin'], function () use ($router) {
@@ -88,6 +94,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('competitions/{id}/teams', ['uses' => 'CompetitionController@showTeams']);
 
             $router->post('register', ['uses' => 'AdminController@register']);
+
+            $router->get('academy', ['uses' => 'AcademyController@index']);
         });
     });
 });

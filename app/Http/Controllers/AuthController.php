@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Academy;
 use App\Models\DetailTeam;
 use App\Models\Institution;
 use App\Models\Team;
@@ -83,6 +84,14 @@ class AuthController extends Controller
                     $team->user_proof = $detailTeam->detail_team_proof;
 
                     array_push($teams, $team);
+                }
+
+                $academy = Academy::where('user_id', $user->user_id)->first();
+
+                if (!$academy) {
+                    $user->academy = [];
+                } else {
+                    $user->academy = $academy;
                 }
 
                 $user->teams = $teams;
