@@ -63,6 +63,7 @@ class AcademyController extends Controller
         // validate data
         $validation = Validator::make($request->all(), [
             'resume' => 'required',
+            'phone' => 'required'
         ]);
 
         // check validation fails
@@ -92,6 +93,7 @@ class AcademyController extends Controller
         $academy->academy_resume = $ext.'-'.$fileName;
         $academy->academy_payment_proof = '';
         $academy->academy_status = 0;
+        $academy->academy_phone_number = $request->phone;
 
         try {
             $academy->save();

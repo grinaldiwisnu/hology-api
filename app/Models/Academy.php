@@ -16,7 +16,7 @@ class Academy extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'academy_resume', 'academy_payment_proof', 'academy_status'
+        'user_id', 'academy_resume', 'academy_payment_proof', 'academy_status', 'academy_phone_number'
     ];
 
     public $timestamps = false;
