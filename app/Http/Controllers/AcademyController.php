@@ -238,7 +238,10 @@ class AcademyController extends Controller
             ], 500);
         }
 
-        return response($file, 200, ['Content-Type' => "application/pdf"]);
+        return response($file, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"'
+        ]);
     }
 
 
