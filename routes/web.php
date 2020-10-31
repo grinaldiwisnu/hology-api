@@ -96,6 +96,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('register', ['uses' => 'AdminController@register']);
 
             $router->get('academy', ['uses' => 'AcademyController@index']);
+            $router->get('academy/{id}/resume', ['uses' => 'AcademyController@getResume']);
+            $router->get('academy/{id}/payment', ['uses' => 'AcademyController@getPaymentProof']);
+            $router->post('academy/{id}/update', ['uses' => 'AcademyController@updateStatus']);
         });
     });
 });

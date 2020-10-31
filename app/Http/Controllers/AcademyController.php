@@ -201,6 +201,46 @@ class AcademyController extends Controller
         return response($file, 200, ['Content-Type' => "image/$ext"]);
     }
 
+        /**
+     * get resume
+     *
+     * @param smallint $id
+     * @return Illuminate\Http\Response
+     */
+    public function getResume($id)
+    {
+        // TODO: get team payment proof
+
+        // get team;
+        $academy = Academy::where('academy_id', $id)->first();
+
+        if (!$academy)
+            return response()->json([
+                'success' => 'false',
+                'data' => null,
+                'message' => 'Academy user not found!'
+            ], 404);
+
+        // split ext and filename
+        [$ext, $filename] = explode("-", $academy->acaemy_resume, 2);
+
+        // define path
+        $filepath = storage_path("app/academy/resume/$filename.$ext");
+
+        // read file content
+        try {
+            $file = file_get_contents($filepath);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'Oops! Looks like the server in a bad mood, please try again later. :D'
+            ], 500);
+        }
+
+        return response($file, 200, ['Content-Type' => "application/pdf"]);
+    }
+
 
     /**
      * Upload payment proof
