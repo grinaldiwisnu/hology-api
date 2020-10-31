@@ -222,7 +222,7 @@ class AcademyController extends Controller
             ], 404);
 
         // split ext and filename
-        [$ext, $filename] = explode("-", $academy->acaemy_resume, 2);
+        [$ext, $filename] = explode("-", $academy->academy_resume, 2);
 
         // define path
         $filepath = storage_path("app/academy/resume/$filename.$ext");
