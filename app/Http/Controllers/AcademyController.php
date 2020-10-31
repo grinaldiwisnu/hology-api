@@ -238,7 +238,7 @@ class AcademyController extends Controller
             ], 500);
         }
 
-        return response()->file($filepath);
+        return response($file, 200, ['Content-Type' => "application/pdf"]);
     }
 
 
